@@ -12,4 +12,5 @@ export default defineConfig({
       provider: 'c8',
     },
   },
+  base: '/codecheck-private-check/',
 });
