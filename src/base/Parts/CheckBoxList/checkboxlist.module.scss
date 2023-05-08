@@ -1,0 +1,16 @@
+.listbase {
+  list-style: none;
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: space-between;
+  margin: 0;
+  padding: 0;
+  .list {
+    width: 150px;
+    margin-bottom: 15px;
+  }
+  &::after {
+    content: '';
+    width: 150px;
+  }
+}

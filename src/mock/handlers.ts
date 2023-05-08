@@ -1,6 +1,4 @@
-import { rest } from 'msw';
-export const handlers = [
-  rest.get('/test', (_, res, ctx) => {
-    return res(ctx.status(200));
-  }),
-];
+import { prefecturesHandler } from '@/src/feature/PopulationChart/mock/predectures';
+import { populationsHandler } from '@/src/feature/PopulationChart/mock/population';
+
+export const handlers = [prefecturesHandler(), populationsHandler()];

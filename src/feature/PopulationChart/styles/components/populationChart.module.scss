@@ -1,0 +1,26 @@
+.populationChart {
+  padding-right: 10px;
+  width: 100%;
+
+  @include mq(lg) {
+    padding-right: 20px;
+    width: 800px;
+  }
+}
+
+.populationCategories {
+  padding-left: 15%;
+
+  width: 90%;
+  display: flex;
+  justify-content: center;
+  @include mq(sm) {
+    width: 100%;
+    padding-left: 10%;
+    width: $medium-width;
+  }
+  @include mq(lg) {
+    padding-left: 10%;
+    width: $medium-width;
+  }
+}

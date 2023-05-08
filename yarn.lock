@@ -3130,12 +3130,28 @@ __metadata:
   languageName: node
   linkType: hard
 
+"@types/d3-path@npm:^1":
+  version: 1.0.9
+  resolution: "@types/d3-path@npm:1.0.9"
+  checksum: acbf7376fd7bef61701bce915bf5a9cb5eaa9741b7919d3e644f841a65faf1aea3cf63ba949c21ddda8c9849221394856a2054805aa698d3bb5ac3fe7d029817
+  languageName: node
+  linkType: hard
+
 "@types/d3-scale@npm:^4.0.2":
   version: 4.0.3
   resolution: "@types/d3-scale@npm:4.0.3"
   dependencies:
     "@types/d3-time": "*"
   checksum: 76684da8519ab5f2210e647f74f96ece9c6816dea4ad5d76131121703a5268cc65687a8bc9ebbf4a44039482247336d98811ecc3fbfeb7f0122fdce4bb295547
+  languageName: node
+  linkType: hard
+
+"@types/d3-shape@npm:^1":
+  version: 1.3.8
+  resolution: "@types/d3-shape@npm:1.3.8"
+  dependencies:
+    "@types/d3-path": ^1
+  checksum: a7f78a3f0be1215b512efb636ba381768ab4104ef9b72b7fcc2ab9810e7d6fc2ee062f3103ef99236f4462deabac60d2fd96375315ec7ad33278757918c94592
   languageName: node
   linkType: hard
 
@@ -3454,6 +3470,16 @@ __metadata:
     "@types/scheduler": "*"
     csstype: ^3.0.2
   checksum: 97c4534e849edf991be0820b0911d036e794b8e2599a1544f500c769acbcb4f443ccde1a3f22298f22ce368ee7757f746e4a529e889567fc142a627698e2de39
+  languageName: node
+  linkType: hard
+
+"@types/recharts@npm:^1.8.24":
+  version: 1.8.24
+  resolution: "@types/recharts@npm:1.8.24"
+  dependencies:
+    "@types/d3-shape": ^1
+    "@types/react": "*"
+  checksum: 1341e5472bf62a83ab98648bc5c14a9a81fba16af9255203ef12a21caa21a988fac3198d9771703394eb876d4fbefb42e818865e35ecfe0d105aee1d1164aa6e
   languageName: node
   linkType: hard
 
@@ -10109,6 +10135,13 @@ __metadata:
   languageName: node
   linkType: hard
 
+"sanitize.css@npm:^13.0.0":
+  version: 13.0.0
+  resolution: "sanitize.css@npm:13.0.0"
+  checksum: a99ca77c4d135800a4a93c3555e5aa4a2eb040a833df716dbe9132e1f2086fbf9acdb8021a579f40dcf77166d2d50f3358b4b6121a247d26fed5a0e6f5af3bb7
+  languageName: node
+  linkType: hard
+
 "sass@npm:^1.62.1":
   version: 1.62.1
   resolution: "sass@npm:1.62.1"
@@ -11561,6 +11594,13 @@ __metadata:
   languageName: node
   linkType: hard
 
+"whatwg-fetch@npm:^3.6.2":
+  version: 3.6.2
+  resolution: "whatwg-fetch@npm:3.6.2"
+  checksum: ee976b7249e7791edb0d0a62cd806b29006ad7ec3a3d89145921ad8c00a3a67e4be8f3fb3ec6bc7b58498724fd568d11aeeeea1f7827e7e1e5eae6c8a275afed
+  languageName: node
+  linkType: hard
+
 "whatwg-mimetype@npm:^3.0.0":
   version: 3.0.0
   resolution: "whatwg-mimetype@npm:3.0.0"
@@ -11871,6 +11911,7 @@ __metadata:
     "@testing-library/user-event": ^14.4.3
     "@types/react": ^18.0.28
     "@types/react-dom": ^18.0.11
+    "@types/recharts": ^1.8.24
     "@typescript-eslint/eslint-plugin": ^5.57.1
     "@typescript-eslint/parser": ^5.57.1
     "@vitejs/plugin-react": ^4.0.0
@@ -11891,10 +11932,12 @@ __metadata:
     react-dom: ^18.2.0
     recharts: ^2.5.0
     recoil: ^0.7.7
+    sanitize.css: ^13.0.0
     sass: ^1.62.1
     storybook: 7.0.8
     typescript: ^5.0.2
     vite: ^4.3.2
     vitest: ^0.31.0
+    whatwg-fetch: ^3.6.2
   languageName: unknown
   linkType: soft

@@ -35,3 +35,6 @@ coverage
 
 #StoryBook
 src/stories
+
+#Env
+.env
