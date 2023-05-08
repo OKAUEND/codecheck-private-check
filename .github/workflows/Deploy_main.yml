@@ -1,4 +1,4 @@
-name: Deploy Main Branch Actions
+﻿name: Deploy Main Branch Actions
 
 on:
   push:
