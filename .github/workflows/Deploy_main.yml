@@ -1,7 +1,7 @@
-﻿name: Deploy Main Branch Actions
+name: Deploy Main Branch Actions
 
 on:
-  pull_request:
+  push:
     branches: ['main']
 
   workflow_dispatch:
