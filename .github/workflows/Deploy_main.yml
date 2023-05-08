@@ -61,9 +61,12 @@ jobs:
           node-version: 18
       - name: Install dependencies
         run: yarn install
+      - name: Set Environment Variables
+        run: |
+          echo "VITE_RESAS_API_KEY=${{ secrets.VITE_RESAS_API_KEY }}" >> .env
+          echo "NODE_ENV=production" >> .env
       - name: Build
         run: yarn build
-        env: VITE_RESAS_API_KEY: ${{ secrets.VITE_RESAS_API_KEY }}
       - name: Setup Pages
         uses: actions/configure-pages@v3
       - name: Upload artifact
