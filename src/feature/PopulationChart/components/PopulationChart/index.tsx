@@ -8,10 +8,10 @@ import { useSelectedPrefectures } from '../../hook/useSelectedPrefectures';
 import style from '@/src/feature/PopulationChart/styles/components/populationChart.module.scss';
 
 export const PopulationChart = () => {
-  const population = usePopulation();
   const [selectedPref] = useSelectedPrefectures();
   const [categories, selectedCategory, changeCategory] =
     usePopulationCategories();
+  const population = usePopulation(selectedPref);
 
   return (
     <article className={style.populationChart}>

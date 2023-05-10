@@ -42,11 +42,11 @@ const filteredPopulation = selectorFamily<PopulationInfo[], Prefectures>({
   get:
     (prefecture) =>
     async ({ get }): Promise<PopulationInfo[]> => {
-      const selectedCategory = get(selectedCategoryState);
+      // const selectedCategory = get(selectedCategoryState);
       const populations = get(populationsQuery(prefecture));
 
       const filtered = populations.data.filter((population) => {
-        return population.label === selectedCategory;
+        return population.label === '総人口';
       })[0];
 
       const formmted = filtered.data.map((year) => {
@@ -57,39 +57,41 @@ const filteredPopulation = selectorFamily<PopulationInfo[], Prefectures>({
     },
 });
 
-const populations = selector({
+const populations = selectorFamily({
   key: 'data-flow/populations',
-  get: ({ get }) => {
-    const selectedPrefectures = get(prefecturesMapToArray);
+  get:
+    (selectedPrefectures: Prefectures[]) =>
+    ({ get }) => {
+      // const selectedPrefectures = get(prefecturesMapToArray);
 
-    const populations = get(
-      waitForAll(
-        selectedPrefectures.map((prefecture) => {
-          return filteredPopulation(prefecture);
-        })
-      )
-    );
+      const populations = get(
+        waitForAll(
+          selectedPrefectures.map((prefecture) => {
+            return filteredPopulation(prefecture);
+          })
+        )
+      );
 
-    if (populations.length === 0) {
-      return [];
-    }
+      if (populations.length === 0) {
+        return [];
+      }
 
-    const formmtedInfo = populations.reduce((prevInfo, curreantInfo) => {
-      const result = prevInfo.map((yearInfo) => {
-        const curreantResult = curreantInfo.find(
-          (curreanYearInfo) => curreanYearInfo.year === yearInfo.year
-        );
-        return { ...yearInfo, ...curreantResult };
+      const formmtedInfo = populations.reduce((prevInfo, curreantInfo) => {
+        const result = prevInfo.map((yearInfo) => {
+          const curreantResult = curreantInfo.find(
+            (curreanYearInfo) => curreanYearInfo.year === yearInfo.year
+          );
+          return { ...yearInfo, ...curreantResult };
+        });
+        return result;
       });
-      return result;
-    });
 
-    return formmtedInfo;
-  },
+      return formmtedInfo;
+    },
 });
 
-export const usePopulation = () => {
-  return useRecoilValue(populations);
+export const usePopulation = (selectedPrefectures: Prefectures[]) => {
+  return useRecoilValue(populations(selectedPrefectures));
 };
 
 export const usePopulationCategories = () => {
