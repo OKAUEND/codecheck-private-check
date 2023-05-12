@@ -43,41 +43,33 @@ describe('usePopulation Hook TEST', () => {
     });
   });
   test('チェックされた都道府県がある時、APIからデータを取得しているか', async () => {
-    const { result, rerender } = renderHook(
-      () => {
-        const population = usePopulation();
-        const [, selectedPref] = useSelectedPrefectures();
-
-        return { population, selectedPref };
-      },
+    const { result, rerender } = renderHook<ReturnType, Props>(
+      (props) => usePopulation(props.selectedPrefectures),
       {
+        initialProps: {
+          selectedPrefectures: [],
+        },
         wrapper: RecoilRoot,
       }
     );
 
     await waitFor(() => {
-      expect(result.current.population.length).toEqual(0);
+      expect(result.current.length).toEqual(0);
     });
 
-    // const newProps: Props = {
-    //   selectedPrefectures: [generatePrefecture(1, 'Mock')],
-    // };
+    const newProps: Props = {
+      selectedPrefectures: [generatePrefecture(1, 'Mock')],
+    };
 
-    const testPrefData = generatePrefectureV2(1, 'Mock');
-
-    // rerender(newProps);
+    rerender(newProps);
 
     const testDate = generatePopulations(1);
 
-    await act(async () => {
-      result.current.selectedPref(testPrefData);
-    });
-
     await waitFor(() => {
-      expect(result.current.population.length).toEqual(18);
+      expect(result.current.length).toEqual(18);
       const totalPOP = testDate.data[0].data;
 
-      result.current.population.forEach((value, index) => {
+      result.current.forEach((value, index) => {
         const nowPoP = totalPOP[index];
         const target = value[1];
         expect(target).toEqual(nowPoP.value);
