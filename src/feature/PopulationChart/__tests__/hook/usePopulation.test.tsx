@@ -29,12 +29,8 @@ describe('usePopulation Hook TEST', () => {
     return { prefCode: id, prefName: name };
   };
 
-  const generatePrefectureV2 = (id: number, name: string): SelectedCheckbox => {
-    return { checked: true, value: id, name: name };
-  };
-
   test('都道府県が選択されていない時は、件数が0件である', async () => {
-    const { result } = renderHook(() => usePopulation(), {
+    const { result } = renderHook(() => usePopulation([]), {
       wrapper: RecoilRoot,
     });
 
