@@ -7,20 +7,37 @@ import {
   populationsHandler,
   generatePopulations,
 } from '@/src/feature/PopulationChart/mock/population';
+import { SelectedCheckbox } from '@/src/types/Element';
 
 import {
   usePopulation,
   usePopulationCategories,
   populationCategories,
-  Categoryies,
+  Categories,
 } from '@/src/feature/PopulationChart/hook/usePopulation';
 import {
   selectedPrefectures,
   useSelectedPrefectures,
 } from '@/src/feature/PopulationChart/hook/useSelectedPrefectures';
+import { number } from 'prop-types';
+import { PopulationInfo, Prefectures } from '@/src/types/resas';
+
+interface Props {
+  selectedPrefectures: Prefectures[];
+}
+
+type ReturnType = PopulationInfo[];
 
 describe('usePopulation Hook TEST', () => {
   setupMockServer([populationsHandler()]);
+
+  const generatePrefecture = (id: number, name: string) => {
+    return { prefCode: id, prefName: name };
+  };
+
+  const generatePrefectureV2 = (id: number, name: string): SelectedCheckbox => {
+    return { checked: true, value: id, name: name };
+  };
 
   test('都道府県が選択されていない時は、件数が0件である', async () => {
     const { result } = renderHook(() => usePopulation(), {
@@ -32,12 +49,12 @@ describe('usePopulation Hook TEST', () => {
     });
   });
   test('チェックされた都道府県がある時、APIからデータを取得しているか', async () => {
-    const { result } = renderHook(
+    const { result, rerender } = renderHook(
       () => {
         const population = usePopulation();
-        const [, setPref] = useSelectedPrefectures();
+        const [, selectedPref] = useSelectedPrefectures();
 
-        return { population, setPref };
+        return { population, selectedPref };
       },
       {
         wrapper: RecoilRoot,
@@ -48,19 +65,22 @@ describe('usePopulation Hook TEST', () => {
       expect(result.current.population.length).toEqual(0);
     });
 
-    //現状あまりいいやり方ではないため
-    //The current testing environment is not configured to support act(...)が発生するため
-    //解決するのだったら、Recoil内でループをやめて、サードライブラリでデータ取得をしたほうがよい
-    await act(async () => {
-      await waitFor(() => {
-        result.current.setPref({ checked: true, value: 1, name: 'Mock' });
-        result.current.setPref({ checked: true, value: 2, name: 'Mock2' });
-      });
-    });
+    // const newProps: Props = {
+    //   selectedPrefectures: [generatePrefecture(1, 'Mock')],
+    // };
+
+    const testPrefData = generatePrefectureV2(1, 'Mock');
+
+    // rerender(newProps);
 
     const testDate = generatePopulations(1);
 
+    await act(async () => {
+      result.current.selectedPref(testPrefData);
+    });
+
     await waitFor(() => {
+      expect(result.current.population.length).toEqual(18);
       const totalPOP = testDate.data[0].data;
 
       result.current.population.forEach((value, index) => {
@@ -78,19 +98,9 @@ describe('usePopulation Hook TEST', () => {
 
         return { population, setCategory };
       },
+
       {
-        wrapper: ({ children }) => (
-          <RecoilRoot
-            initializeState={(snap) => {
-              snap.set(
-                selectedPrefectures,
-                new Map([[1, { prefCode: 1, prefName: '仮都道府県' }]])
-              );
-            }}
-          >
-            {children}
-          </RecoilRoot>
-        ),
+        wrapper: RecoilRoot,
       }
     );
 
@@ -180,7 +190,7 @@ describe('usePopulationCategories Hook TEST', () => {
       wrapper: RecoilRoot,
     });
 
-    const testDate: Categoryies = populationCategories[2];
+    const testDate: Categories = populationCategories[2];
 
     expect(result.current[1]).toEqual(populationCategories[0]);
 
