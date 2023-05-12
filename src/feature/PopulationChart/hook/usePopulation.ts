@@ -1,6 +1,5 @@
 import {
   atom,
-  selector,
   selectorFamily,
   useRecoilCallback,
   useRecoilValue,
@@ -9,21 +8,10 @@ import {
 
 import { Prefectures, PopulationInfo, Populations } from '@/src/types/resas';
 import { populationQuery } from '@/src/feature/PopulationChart/api/populationQuery';
-import { prefecturesMapToArray } from '@/src/feature/PopulationChart/hook/useSelectedPrefectures';
 
 const prefQuery = 'prefCode=';
 
 export type Categories = '総人口' | '年少人口' | '生産年齢人口' | '老年人口';
-
-type PopulationList = {
-  selectedPrefs: Prefectures[];
-  selectedCategory: string;
-};
-
-type PopulationSelected = {
-  selectedPref: Prefectures;
-  selectedCategory: string;
-};
 
 export const populationCategories: Categories[] = [
   '総人口',
@@ -31,6 +19,16 @@ export const populationCategories: Categories[] = [
   '生産年齢人口',
   '老年人口',
 ];
+
+type SelectedsInfo = {
+  selectedPrefs: Prefectures[];
+  selectedCategory: string;
+};
+
+type SelectedInfo = {
+  prefecture: Prefectures;
+  selectedCategory: string;
+};
 
 const selectedCategoryState = atom<string>({
   key: 'state/category',
@@ -47,33 +45,28 @@ const populationsQuery = selectorFamily<Populations, Prefectures>({
   },
 });
 
-const filteredPopulation = selectorFamily<PopulationInfo[], PopulationSelected>(
-  {
-    key: 'data-flow/filtered-population',
-    get:
-      (prefecture) =>
-      async ({ get }): Promise<PopulationInfo[]> => {
-        const selectedCategory = get(selectedCategoryState);
-        const populations = get(populationsQuery(prefecture.selectedPref));
+const filteredPopulation = selectorFamily<PopulationInfo[], SelectedInfo>({
+  key: 'data-flow/filtered-population',
+  get:
+    ({ prefecture, selectedCategory }) =>
+    async ({ get }): Promise<PopulationInfo[]> => {
+      // const selectedCategory = get(selectedCategoryState);
+      const populations = get(populationsQuery(prefecture));
 
-        const filtered = populations.data.filter((population) => {
-          return population.label === selectedCategory;
-        })[0];
+      const filtered = populations.data.filter((population) => {
+        return population.label === selectedCategory;
+      })[0];
 
-        const formmted = filtered.data.map((year) => {
-          return {
-            year: year.year,
-            [prefecture.selectedPref.prefCode]: year.value,
-          };
-        });
+      const formmted = filtered.data.map((year) => {
+        return { year: year.year, [prefecture.prefCode]: year.value };
+      });
 
-        return formmted;
-      },
-  }
-);
+      return formmted;
+    },
+});
 
-const formattedPopulations = selectorFamily<PopulationInfo[], PopulationList>({
-  key: 'data-flow/formatted-populations',
+const formatedPopulations = selectorFamily<PopulationInfo[], SelectedsInfo>({
+  key: 'data-flow/populations',
   get:
     ({ selectedPrefs, selectedCategory }) =>
     ({ get }) => {
@@ -82,10 +75,7 @@ const formattedPopulations = selectorFamily<PopulationInfo[], PopulationList>({
       const populations = get(
         waitForAll(
           selectedPrefs.map((prefecture) => {
-            return filteredPopulation({
-              selectedPref: prefecture,
-              selectedCategory: selectedCategory,
-            });
+            return filteredPopulation({ prefecture, selectedCategory });
           })
         )
       );
@@ -108,40 +98,20 @@ const formattedPopulations = selectorFamily<PopulationInfo[], PopulationList>({
     },
 });
 
-const populationList = selectorFamily({
+const populationList = selectorFamily<PopulationInfo[], SelectedsInfo>({
   key: 'data-flow/population-list',
   get:
-    () =>
+    ({ selectedPrefs, selectedCategory }) =>
     ({ get }) => {
-      const selectedPrefectures = get(prefecturesMapToArray);
-      const selectedCategory = get(selectedCategoryState);
-
-      const result = get(
-        formattedPopulations({
-          selectedPrefs: selectedPrefectures,
-          selectedCategory: selectedCategory,
-        })
-      );
+      return get(formatedPopulations({ selectedPrefs, selectedCategory }));
     },
 });
 
-const populationListV2 = selector({
-  key: 'data-flow/population-list',
-  get: ({ get }) => {
-    const selectedPrefectures = get(prefecturesMapToArray);
-    const selectedCategory = get(selectedCategoryState);
-
-    return get(
-      formattedPopulations({
-        selectedPrefs: selectedPrefectures,
-        selectedCategory: selectedCategory,
-      })
-    );
-  },
-});
-
-export const usePopulation = () => {
-  return useRecoilValue(populationListV2);
+export const usePopulation = (selected: Prefectures[]) => {
+  const selectedCategory = useRecoilValue(selectedCategoryState);
+  return useRecoilValue(
+    populationList({ selectedPrefs: selected, selectedCategory })
+  );
 };
 
 export const usePopulationCategories = () => {
