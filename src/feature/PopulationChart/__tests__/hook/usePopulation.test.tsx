@@ -7,7 +7,6 @@ import {
   populationsHandler,
   generatePopulations,
 } from '@/src/feature/PopulationChart/mock/population';
-import { SelectedCheckbox } from '@/src/types/Element';
 
 import {
   usePopulation,
@@ -15,11 +14,6 @@ import {
   populationCategories,
   Categories,
 } from '@/src/feature/PopulationChart/hook/usePopulation';
-import {
-  selectedPrefectures,
-  useSelectedPrefectures,
-} from '@/src/feature/PopulationChart/hook/useSelectedPrefectures';
-import { number } from 'prop-types';
 import { PopulationInfo, Prefectures } from '@/src/types/resas';
 
 interface Props {
