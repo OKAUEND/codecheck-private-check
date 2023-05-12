@@ -7,7 +7,7 @@ import {
 } from '@/src/types/resas';
 import {
   populationCategories,
-  Categoryies,
+  Categories,
 } from '@/src/feature/PopulationChart/hook/usePopulation';
 
 const path = () =>
@@ -23,7 +23,7 @@ export const generatePopulations = (code: number): Populations => {
   };
 };
 
-const categoryFactory = (category: Categoryies, code: number): Category => {
+const categoryFactory = (category: Categories, code: number): Category => {
   return {
     label: category,
     data: populationFactory(category, code),
@@ -31,7 +31,7 @@ const categoryFactory = (category: Categoryies, code: number): Category => {
 };
 
 const populationFactory = (
-  category: Categoryies,
+  category: Categories,
   code: number
 ): Population[] => {
   const startYear = 1960;
