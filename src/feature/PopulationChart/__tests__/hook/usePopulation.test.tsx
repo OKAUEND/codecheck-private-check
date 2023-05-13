@@ -7,7 +7,6 @@ import {
   populationsHandler,
   generatePopulations,
 } from '@/src/feature/PopulationChart/mock/population';
-import { SelectedCheckbox } from '@/src/types/Element';
 
 import {
   usePopulation,
@@ -15,15 +14,11 @@ import {
   populationCategories,
   Categories,
 } from '@/src/feature/PopulationChart/hook/usePopulation';
-import {
-  selectedPrefectures,
-  useSelectedPrefectures,
-} from '@/src/feature/PopulationChart/hook/useSelectedPrefectures';
-import { number } from 'prop-types';
 import { PopulationInfo, Prefectures } from '@/src/types/resas';
 
 interface Props {
   selectedPrefectures: Prefectures[];
+  selectedCategory: string;
 }
 
 type ReturnType = PopulationInfo[];
@@ -35,12 +30,8 @@ describe('usePopulation Hook TEST', () => {
     return { prefCode: id, prefName: name };
   };
 
-  const generatePrefectureV2 = (id: number, name: string): SelectedCheckbox => {
-    return { checked: true, value: id, name: name };
-  };
-
   test('都道府県が選択されていない時は、件数が0件である', async () => {
-    const { result } = renderHook(() => usePopulation(), {
+    const { result } = renderHook(() => usePopulation([], '総人口'), {
       wrapper: RecoilRoot,
     });
 
@@ -49,41 +40,39 @@ describe('usePopulation Hook TEST', () => {
     });
   });
   test('チェックされた都道府県がある時、APIからデータを取得しているか', async () => {
-    const { result, rerender } = renderHook(
-      () => {
-        const population = usePopulation();
-        const [, selectedPref] = useSelectedPrefectures();
-
-        return { population, selectedPref };
-      },
+    const { result, rerender } = renderHook<ReturnType, Props>(
+      (props) =>
+        usePopulation(props.selectedPrefectures, props.selectedCategory),
       {
+        initialProps: {
+          selectedPrefectures: [],
+          selectedCategory: '総人口',
+        },
         wrapper: RecoilRoot,
       }
     );
 
     await waitFor(() => {
-      expect(result.current.population.length).toEqual(0);
+      expect(result.current.length).toEqual(0);
     });
 
-    // const newProps: Props = {
-    //   selectedPrefectures: [generatePrefecture(1, 'Mock')],
-    // };
+    const newProps: Props = {
+      selectedPrefectures: [
+        generatePrefecture(1, 'Mock'),
+        generatePrefecture(2, 'Mock2'),
+      ],
+      selectedCategory: '総人口',
+    };
 
-    const testPrefData = generatePrefectureV2(1, 'Mock');
-
-    // rerender(newProps);
+    rerender(newProps);
 
     const testDate = generatePopulations(1);
 
-    await act(async () => {
-      result.current.selectedPref(testPrefData);
-    });
-
     await waitFor(() => {
-      expect(result.current.population.length).toEqual(18);
+      expect(result.current.length).toEqual(18);
       const totalPOP = testDate.data[0].data;
 
-      result.current.population.forEach((value, index) => {
+      result.current.forEach((value, index) => {
         const nowPoP = totalPOP[index];
         const target = value[1];
         expect(target).toEqual(nowPoP.value);
@@ -91,38 +80,34 @@ describe('usePopulation Hook TEST', () => {
     });
   });
   test('人口カテゴリーが変更された場合、値も変わっているか', async () => {
-    const { result } = renderHook(
-      () => {
-        const population = usePopulation();
-        const [, , setCategory] = usePopulationCategories();
-
-        return { population, setCategory };
-      },
-
+    const { result, rerender } = renderHook<ReturnType, Props>(
+      (props) =>
+        usePopulation(props.selectedPrefectures, props.selectedCategory),
       {
+        initialProps: {
+          selectedPrefectures: [generatePrefecture(1, 'Mock')],
+          selectedCategory: '総人口',
+        },
         wrapper: RecoilRoot,
       }
     );
 
     await waitFor(() => {
-      expect(result.current.population.length).toEqual(18);
+      expect(result.current.length).toEqual(18);
     });
 
-    //現状あまりいいやり方ではないため
-    //The current testing environment is not configured to support act(...)が発生するため
-    //解決するのだったら、Recoil内でループをやめて、サードライブラリでデータ取得をしたほうがよい
-    await act(async () => {
-      await waitFor(() => {
-        result.current.setCategory('生産年齢人口');
-      });
-    });
+    const newWorkerProps: Props = {
+      selectedPrefectures: [generatePrefecture(1, 'Mock')],
+      selectedCategory: '生産年齢人口',
+    };
+    rerender(newWorkerProps);
 
     const testDate = generatePopulations(1);
     const workerPOP = testDate.data.filter(
       (data) => data.label === '生産年齢人口'
     )[0];
     await waitFor(() => {
-      result.current.population.forEach((value, index) => {
+      result.current.forEach((value, index) => {
         const POP = workerPOP.data[index];
         const target = value[1];
 
@@ -130,18 +115,18 @@ describe('usePopulation Hook TEST', () => {
       });
     });
 
-    await act(async () => {
-      await waitFor(() => {
-        result.current.setCategory('年少人口');
-      });
-    });
+    const newChildProps: Props = {
+      selectedPrefectures: [generatePrefecture(1, 'Mock')],
+      selectedCategory: '年少人口',
+    };
+    rerender(newChildProps);
 
     const childPOP = testDate.data.filter(
       (data) => data.label === '年少人口'
     )[0];
 
     await waitFor(() => {
-      result.current.population.forEach((value, index) => {
+      result.current.forEach((value, index) => {
         const POP = childPOP.data[index];
         const target = value[1];
 
@@ -149,18 +134,18 @@ describe('usePopulation Hook TEST', () => {
       });
     });
 
-    await act(async () => {
-      await waitFor(() => {
-        result.current.setCategory('老年人口');
-      });
-    });
+    const newSeniorProps: Props = {
+      selectedPrefectures: [generatePrefecture(1, 'Mock')],
+      selectedCategory: '老年人口',
+    };
+    rerender(newSeniorProps);
 
     const seniorPOP = testDate.data.filter(
       (data) => data.label === '老年人口'
     )[0];
 
     await waitFor(() => {
-      result.current.population.forEach((value, index) => {
+      result.current.forEach((value, index) => {
         const POP = seniorPOP.data[index];
         const target = value[1];
 

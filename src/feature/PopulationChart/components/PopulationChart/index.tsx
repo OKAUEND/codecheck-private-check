@@ -11,7 +11,7 @@ export const PopulationChart = () => {
   const [selectedPref] = useSelectedPrefectures();
   const [categories, selectedCategory, changeCategory] =
     usePopulationCategories();
-  const population = usePopulation();
+  const population = usePopulation(selectedPref, selectedCategory);
 
   return (
     <article className={style.populationChart}>
