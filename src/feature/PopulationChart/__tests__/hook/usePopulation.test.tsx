@@ -57,7 +57,10 @@ describe('usePopulation Hook TEST', () => {
     });
 
     const newProps: Props = {
-      selectedPrefectures: [generatePrefecture(1, 'Mock')],
+      selectedPrefectures: [
+        generatePrefecture(1, 'Mock'),
+        generatePrefecture(2, 'Mock2'),
+      ],
       selectedCategory: '総人口',
     };
 
