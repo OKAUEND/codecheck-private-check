@@ -11,7 +11,7 @@ const ErrorMessage = ({ status }: CallBackProps) => {
   const message = useErrorState(status);
   return (
     <section className={style.errorMessage}>
-      <h1>{status ? status : ''}</h1>
+      <h1>{status}</h1>
       <span>{message.message}</span>
       <span>{message.subMessage}</span>
     </section>
