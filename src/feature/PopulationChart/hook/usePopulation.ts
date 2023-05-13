@@ -65,7 +65,7 @@ const filteredPopulation = selectorFamily<PopulationInfo[], SelectedInfo>({
     },
 });
 
-const formatedPopulations = selectorFamily<PopulationInfo[], SelectedsInfo>({
+const formattedPopulations = selectorFamily<PopulationInfo[], SelectedsInfo>({
   key: 'data-flow/populations',
   get:
     ({ selectedPrefs, selectedCategory }) =>
@@ -103,14 +103,13 @@ const populationList = selectorFamily<PopulationInfo[], SelectedsInfo>({
   get:
     ({ selectedPrefs, selectedCategory }) =>
     ({ get }) => {
-      return get(formatedPopulations({ selectedPrefs, selectedCategory }));
+      return get(formattedPopulations({ selectedPrefs, selectedCategory }));
     },
 });
 
-export const usePopulation = (selected: Prefectures[]) => {
-  const selectedCategory = useRecoilValue(selectedCategoryState);
+export const usePopulation = (selected: Prefectures[], category: string) => {
   return useRecoilValue(
-    populationList({ selectedPrefs: selected, selectedCategory })
+    populationList({ selectedPrefs: selected, selectedCategory: category })
   );
 };
 
